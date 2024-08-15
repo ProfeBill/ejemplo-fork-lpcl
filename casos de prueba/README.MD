@@ -1,3 +1,0 @@
-# Calculadora de liquidación definitiva.
-
-
