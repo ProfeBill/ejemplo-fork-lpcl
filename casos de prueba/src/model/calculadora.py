@@ -5,7 +5,7 @@ class CalculadoraLiquidacion:
         self.valor_uvt = valor_uvt
 
     def calcular_resultados_prueba(self, salario_basico, fecha_inicio_labores, fecha_ultimas_vacaciones, dias_acumulados_vacaciones):
-        # Calcula los días trabajados y el tiempo trabajado en años
+        
         fecha_inicio = datetime.strptime(fecha_inicio_labores, "%d/%m/%Y")
         fecha_ultimas_vacaciones = datetime.strptime(fecha_ultimas_vacaciones, "%d/%m/%Y")
         dias_trabajados = (fecha_ultimas_vacaciones - fecha_inicio).days
