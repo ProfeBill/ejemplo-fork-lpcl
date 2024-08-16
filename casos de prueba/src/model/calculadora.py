@@ -5,13 +5,13 @@ class LiquidacionCalculator:
         self.uvt_value = uvt_value
 
     def calcular_liquidacion(self, salario, fecha_inicio, fecha_fin, vacaciones_pendientes):
-        # Cálculo de días trabajados
+        
         start_date = datetime.strptime(fecha_inicio, "%d/%m/%Y")
         end_date = datetime.strptime(fecha_fin, "%d/%m/%Y")
         dias_totales = (end_date - start_date).days
         años_trabajados = dias_totales / 365
 
-        # Cálculo de cada componente
+        
         indemnizacion = self.calcular_indemnizacion(salario, años_trabajados)
         vacaciones = self.calcular_vacaciones(salario, dias_totales)
         cesantias = self.calcular_cesantias(salario, dias_totales)
