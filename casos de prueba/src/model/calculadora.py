@@ -1,84 +1,78 @@
 from datetime import datetime
 
-class CalculadoraLiquidacion:
-    def __init__(self, valor_uvt=39205):
-        self.valor_uvt = valor_uvt
+class LiquidacionCalculator:
+    def __init__(self, uvt_value=39205):
+        self.uvt_value = uvt_value
 
-    def calcular_resultados_prueba(self, salario_basico, fecha_inicio_labores, fecha_ultimas_vacaciones, dias_acumulados_vacaciones):
-        
-        fecha_inicio = datetime.strptime(fecha_inicio_labores, "%d/%m/%Y")
-        fecha_ultimas_vacaciones = datetime.strptime(fecha_ultimas_vacaciones, "%d/%m/%Y")
-        dias_trabajados = (fecha_ultimas_vacaciones - fecha_inicio).days
-        tiempo_trabajado_anos = dias_trabajados / 365
-        indemnizacion = self.calcular_indemnizacion(salario_basico, tiempo_trabajado_anos)
-        vacaciones = self.calcular_vacaciones(salario_basico, dias_trabajados)
-        cesantias = self.calcular_cesantias(salario_basico, dias_trabajados)
-        intereses_cesantias = self.calcular_intereses_cesantias(cesantias, dias_acumulados_vacaciones)
-        primas = self.calcular_prima(salario_basico, dias_trabajados)
-        retencion_fuente = self.calcular_retencion(indemnizacion + vacaciones + cesantias + intereses_cesantias + primas)
-        total_pagar = indemnizacion + vacaciones + cesantias + intereses_cesantias + primas - retencion_fuente
-        return indemnizacion, vacaciones, cesantias, intereses_cesantias, primas, retencion_fuente, total_pagar
+    def calcular_liquidacion(self, salario, fecha_inicio, fecha_fin, vacaciones_pendientes):
+        # Cálculo de días trabajados
+        start_date = datetime.strptime(fecha_inicio, "%d/%m/%Y")
+        end_date = datetime.strptime(fecha_fin, "%d/%m/%Y")
+        dias_totales = (end_date - start_date).days
+        años_trabajados = dias_totales / 365
 
-    def calcular_indemnizacion(self, salario_basico, tiempo_trabajado_anos):
-        meses_maximos = 12
-        dias_por_anio = 20
-        dias_maximos = meses_maximos * dias_por_anio
-        dias_indemnizacion = min(tiempo_trabajado_anos * dias_por_anio, dias_maximos)
-        indemnizacion = (salario_basico * dias_indemnizacion) / 30 
-        return round(indemnizacion, 2)
+        # Cálculo de cada componente
+        indemnizacion = self.calcular_indemnizacion(salario, años_trabajados)
+        vacaciones = self.calcular_vacaciones(salario, dias_totales)
+        cesantias = self.calcular_cesantias(salario, dias_totales)
+        intereses_cesantias = self.calcular_intereses_cesantias(cesantias, vacaciones_pendientes)
+        prima = self.calcular_prima(salario, dias_totales)
+        retencion = self.calcular_retencion_total(indemnizacion + vacaciones + cesantias + intereses_cesantias + prima)
 
-    def calcular_vacaciones(self, salario_mensual, dias_trabajados):
+        total_pagar = indemnizacion + vacaciones + cesantias + intereses_cesantias + prima - retencion
+
+        return indemnizacion, vacaciones, cesantias, intereses_cesantias, prima, retencion, total_pagar
+
+    def calcular_indemnizacion(self, salario, años_trabajados):
+        dias_indemnizacion_max = 12 * 20
+        dias_indemnizacion = min(años_trabajados * 20, dias_indemnizacion_max)
+        return round((salario * dias_indemnizacion) / 30, 2)
+
+    def calcular_vacaciones(self, salario, dias_trabajados):
         if dias_trabajados < 0:
             raise ValueError("Los días trabajados no pueden ser negativos")
-        valor_vacaciones = (salario_mensual * dias_trabajados) / 720
-        return round(valor_vacaciones, 2)
+        return round((salario * dias_trabajados) / 720, 2)
 
-    def calcular_cesantias(self, salario_mensual, dias_trabajados):
+    def calcular_cesantias(self, salario, dias_trabajados):
         if dias_trabajados < 0:
             raise ValueError("Los días trabajados no pueden ser negativos")
-        cesantias = (salario_mensual * dias_trabajados) / 360
-        return round(cesantias, 2)
+        return round((salario * dias_trabajados) / 360, 2)
 
-    def calcular_intereses_cesantias(self, cesantias, dias_trabajados):
-        if cesantias < 0:
-            raise ValueError("El valor de las cesantías no puede ser negativo")
+    def calcular_intereses_cesantias(self, cesantias, dias_vacaciones):
+        if cesantias < 0 or dias_vacaciones < 0:
+            raise ValueError("Las cesantías o los días de vacaciones no pueden ser negativos")
+        return round((cesantias * dias_vacaciones * 0.12) / 360, 2)
+
+    def calcular_prima(self, salario, dias_trabajados):
         if dias_trabajados < 0:
             raise ValueError("Los días trabajados no pueden ser negativos")
-        intereses_cesantias = (cesantias * dias_trabajados * 0.12) / 360
-        return round(intereses_cesantias, 2)
+        return round(salario * (dias_trabajados / 360), 2)
 
-    def calcular_prima(self, salario_mensual, dias_trabajados):
-        if dias_trabajados < 0:
-            raise ValueError("Los días trabajados no pueden ser negativos")
-        prima = salario_mensual * (dias_trabajados / 360)
-        return round(prima, 2)
-
-    def calcular_retencion(self, salario_basico):
-        if not isinstance(salario_basico, (int, float)):
-            raise ValueError("El salario básico debe ser un número")
+    def calcular_retencion_total(self, ingreso_total):
+        if not isinstance(ingreso_total, (int, float)):
+            raise ValueError("El ingreso total debe ser numérico")
         retencion = 0
-        salario_basico = float(salario_basico)
-        ingreso_uvt = salario_basico / self.valor_uvt
+        ingreso_en_uvt = ingreso_total / self.uvt_value
 
-        if ingreso_uvt <= 95:
-            pass
-        elif ingreso_uvt <= 150:
-            base_uvt = ingreso_uvt - 95
-            retencion = base_uvt * 0.19 * self.valor_uvt
-        elif ingreso_uvt <= 360:
-            base_uvt = ingreso_uvt - 150
-            retencion = base_uvt * 0.28 * self.valor_uvt + 10 * self.valor_uvt
-        elif ingreso_uvt <= 640:
-            base_uvt = ingreso_uvt - 360
-            retencion = base_uvt * 0.33 * self.valor_uvt + 69 * self.valor_uvt
-        elif ingreso_uvt <= 945:
-            base_uvt = ingreso_uvt - 640
-            retencion = base_uvt * 0.35 * self.valor_uvt + 162 * self.valor_uvt
-        elif ingreso_uvt <= 2300:
-            base_uvt = ingreso_uvt - 945
-            retencion = base_uvt * 0.37 * self.valor_uvt + 268 * self.valor_uvt
+        if ingreso_en_uvt <= 95:
+            return retencion
+        elif ingreso_en_uvt <= 150:
+            base = ingreso_en_uvt - 95
+            retencion = base * 0.19 * self.uvt_value
+        elif ingreso_en_uvt <= 360:
+            base = ingreso_en_uvt - 150
+            retencion = base * 0.28 * self.uvt_value + 10 * self.uvt_value
+        elif ingreso_en_uvt <= 640:
+            base = ingreso_en_uvt - 360
+            retencion = base * 0.33 * self.uvt_value + 69 * self.uvt_value
+        elif ingreso_en_uvt <= 945:
+            base = ingreso_en_uvt - 640
+            retencion = base * 0.35 * self.uvt_value + 162 * self.uvt_value
+        elif ingreso_en_uvt <= 2300:
+            base = ingreso_en_uvt - 945
+            retencion = base * 0.37 * self.uvt_value + 268 * self.uvt_value
         else:
-            base_uvt = ingreso_uvt - 2300
-            retencion = base_uvt * 0.39 * self.valor_uvt + 770 * self.valor_uvt
+            base = ingreso_en_uvt - 2300
+            retencion = base * 0.39 * self.uvt_value + 770 * self.uvt_value
+        
         return round(retencion, 2)
-    
