@@ -1,13 +1,9 @@
-# Calculadora-de-Liquidacion-definitiva
+##  Final Settlement Calculator
+The project aims to develop a Python application that allows the calculation of labor settlements. This tool facilitates identifying the different components that must be paid to an employee upon the termination of their contractual relationship, such as severance pay, unused vacation days, severance, severance interest, service bonuses, and tax withholdings. The application receives information such as the base salary, start and end dates of employment, and accumulated vacation days to perform the necessary calculations according to current formulas and regulations.
 
-El proyecto tiene como objetivo desarrollar una aplicación en Python que permita realizar el cálculo de liquidaciones laborales. Esta herramienta facilita la identificación de los diferentes conceptos que deben abonarse a un trabajador al finalizar su relación contractual, como compensación por despido, vacaciones no disfrutadas, cesantías, intereses de cesantías, prima de servicios y retenciones de impuestos. La aplicación recibe información como el salario base, las fechas de inicio y fin del trabajo, y los días acumulados de vacaciones, para efectuar los cálculos pertinentes conforme a las fórmulas y regulaciones actuales.
-
-# integrantes
-
+## Team Members
 Anderson Monsalve Monsalve
-
 Dubin Andres Soto Parodi
-
 ## Project Structure
 
 - `src/`
