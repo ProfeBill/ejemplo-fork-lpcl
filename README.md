@@ -7,3 +7,33 @@ El proyecto tiene como objetivo desarrollar una aplicación en Python que permit
 Anderson Monsalve Monsalve
 
 Dubin Andres Soto Parodi
+
+## Project Structure
+
+- `src/`
+  - `controller/`
+    - `controlador.py`: Contains the controller logic that connects the views and the model.
+  - `model/`
+    - `calculadora.py`: Contains the `LiquidationCalculator` class, which performs the settlement calculations.
+  - `view/`
+    - `consola.py`: Console interface that allows user interaction.
+    - `consolacontrolador.py`: Manages the interaction between the console and the controller.
+- `test/`
+  - `controllertest.py`: Contains unit tests for the controller.
+
+## Requirements
+
+Make sure you have installed:
+
+- Python 3.8 or higher
+- `unittest` (included by default in Python)
+
+## How to Run the Project
+
+### Step 1: Clone the repository
+
+Clone this repository to your local machine using Git:
+
+```bash
+git clone https://github.com/your-username/proyecto-liquidacion.git
+cd proyecto-liquidacion
