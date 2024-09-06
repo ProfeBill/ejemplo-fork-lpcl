@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 import sys
 
-# Configuración del directorio para importaciones
+
 current_directory = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_directory, '..', 'src')
 sys.path.insert(0, src_path)
