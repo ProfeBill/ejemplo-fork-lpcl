@@ -3,6 +3,7 @@ The project aims to develop a Python application that allows the calculation of 
 
 ## Team Members
 Anderson Monsalve Monsalve
+
 Dubin Andres Soto Parodi
 ## Project Structure
 
