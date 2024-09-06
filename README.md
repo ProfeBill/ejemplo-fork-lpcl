@@ -40,3 +40,4 @@ cd src/view
 python consola.py
 python-m unittest test.controllertest
 
+python src/ view/consolacontrolador.py
