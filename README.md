@@ -33,3 +33,8 @@ Clone this repository to your local machine using Git:
 ```bash
 git clone https://github.com/your-username/proyecto-liquidacion.git
 cd proyecto-liquidacion
+
+cd src/view
+
+python consola.py
+
