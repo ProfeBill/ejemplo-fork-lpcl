@@ -43,3 +43,6 @@ python-m unittest test.controllertest
 
 python src/ view/consolacontrolador.py
   ```
+### step 2 
+
+
