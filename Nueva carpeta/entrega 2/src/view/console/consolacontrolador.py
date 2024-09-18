@@ -47,8 +47,8 @@ def main_menu():
             identity_document = input("Enter the user's identity document: ")
             email = input("Enter the user's email address: ")
             phone = input("Enter the user's phone number: ")
-            start_date = input("Enter the user's start date (YYYY-MM-DD): ")
-            end_date = input("Enter the user's end date (YYYY-MM-DD): ")
+            start_date = input("Enter the user's start date (YYYY/MM/DD): ")
+            end_date = input("Enter the user's end date (YYYY/MM/DD): ")
             try:
                 salary = float(input("Enter the user's salary: "))
             except ValueError:
