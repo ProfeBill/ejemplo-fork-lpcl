@@ -44,7 +44,7 @@ python consola.py
 python-m unittest test.controllertest
 
 python src/ view/consolacontrolador.py
-python src/Gui/kivy_test.py
+python src/model/Gui/kivy_test.py
   ```
 ### step 2 : how to operate the console and controller
 First you run console.py, which is located in the scr/view folder
