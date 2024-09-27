@@ -13,7 +13,7 @@ Dubin Andres Soto Parodi
   - `model/`
     - `calculadora.py`: Contains the `LiquidationCalculator` class, which performs the settlement calculations.
   - `Gui/`
-    - kivy_test.py
+    - kivy_test.py:It is where the interface of our program is located.
   - `view/`
     - `consola.py`: Console interface that allows user interaction.
     - `consolacontrolador.py`: Manages the interaction between the console and the controller.
