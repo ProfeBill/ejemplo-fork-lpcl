@@ -51,7 +51,7 @@ First you run console.py, which is located in the scr/view folder
 This same process is done with this folder src/ view/consolacontrolador.py
 
 ### step 3 : For Kivy to work
-The first thing you should do is install Kivy and when you do, click run and the calculator will appear with the graphical interface, the folder to run is located in the GUI, with the name kivy_test.py
+The first thing you should do is install Kivy and when you do, click Run and the calculator will appear with the graphical interface. To see it correctly, put it in the large tab. The folder to run is located in the GUI, with the name kivy_test. .py
 there you will be executed
 
 
