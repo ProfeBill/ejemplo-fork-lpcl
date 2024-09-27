@@ -12,7 +12,7 @@ Dubin Andres Soto Parodi
     - `controlador.py`: Contains the controller logic that connects the views and the model.
   - `model/`
     - `calculadora.py`: Contains the `LiquidationCalculator` class, which performs the settlement calculations.
-    - `Gui/`
+  - `Gui/`
     - kivy_test.py
   - `view/`
     - `consola.py`: Console interface that allows user interaction.
