@@ -2,9 +2,8 @@
 El proyecto tiene como objetivo desarrollar una aplicación en Python que permita calcular liquidaciones laborales. Esta herramienta facilita la identificación de los diferentes componentes que deben ser pagados a un empleado al finalizar su relación contractual, como indemnización, días de vacaciones no utilizados, intereses de liquidación, bonos por servicio y retenciones fiscales. La aplicación recibe información como el salario base, las fechas de inicio y fin del empleo, y los días de vacaciones acumulados para realizar los cálculos necesarios de acuerdo con las fórmulas y regulaciones actuales.
 
 ## Miembros del Equipo
-Anderson Monsalve Monsalve
-
-Dubin Andrés Soto Parodi
+Juan Diego Gomez Guzman
+Juan Diego Usuga
 
 ## Requisitos
 
