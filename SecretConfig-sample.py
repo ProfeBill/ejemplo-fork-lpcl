@@ -2,7 +2,7 @@
 
 Datos secretos que no deben publicarse en el repo
 
-Diligencie estos datos y guarde este archivo como SecretConfig.py
+Diligencie estos datos y guarde este archivo como SecretConfig.py en el modulo src
 para poder ejecutar la aplicación
 
 """

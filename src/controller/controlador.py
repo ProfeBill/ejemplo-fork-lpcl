@@ -44,41 +44,18 @@ def Insertar( usuario : Usuario ):
         cursor = ObtenerCursor()
         cursor.execute(f"""
         insert into usuarios (
-            cedula,   nombre,  apellido,  telefono,  correo, direccion, codigo_municipio, codigo_departamento
+            cedula,   nombre,  basic_salary, start_work_date,  last_vacation_date, accumulated_vacation_days
         )
         values 
         (
-            '{usuario.cedula}',  '{usuario.nombre}', '{usuario.apellido}', '{usuario.telefono}', '{usuario.correo}', '{usuario.direccion}', '{usuario.codigo_municipio}', '{usuario.codigo_departamento}'
+            '{usuario.cedula}',  '{usuario.nombre}', '{usuario.basic_salary}', '{usuario.start_date}',
+            '{usuario.last_vacation_date}', '{usuario.accumulated_vacation_days}'
         );
                        """)
-        
-        InsertarUsuario( usuario )
-
-        # Las instrucciones DDL y DML no retornan resultados, por eso no necesitan fetchall()
-        # pero si necesitan commit() para hacer los cambios persistentes
         cursor.connection.commit()
     except  :
         cursor.connection.rollback() 
         raise Exception("No fue posible insertar el usuario : " + usuario.cedula )
-    
-def InsertarUsuario(usuario: Usuario):
-    """
-    Guarda la lista de familiares asociados a un Usuario
-    """
-    cursor = ObtenerCursor()
-
-    cursor.execute(f"""
-    insert into usuarios(
-        nombre, cedula, basic_salary, start_work_date, last_vacation_date, accumulated_vacation_days; 
-    )
-    values (
-    '{ usuario.nombre }',
-    '{ usuario.cedula}',
-    '{ usuario.basic_salary}',
-    '{ usuario.start_date}',
-    '{ usuario.last_vacation_date}',
-    '{ usuario.accumulated_vacation_days}'
-    )""")
 
 #Modificar Datos
 
@@ -96,33 +73,33 @@ def Actualizar( usuario : Usuario ):
             basic_salary='{usuario.basic_salary}',
             start_work_date='{usuario.start_date}',
             last_vacation_date='{usuario.last_vacation_date}',
-            accumulated_vacation_days='{usuario.accumulated_vacation_days}',
+            accumulated_vacation_days='{usuario.accumulated_vacation_days}'
         where cedula='{usuario.cedula}'
     """)
 
     cursor.connection.commit()
 
-def Borrar( usuario: Usuario ):
+def Borrar( cedula: str):
     """ Elimina la fila que contiene a un usuario en la BD """
-    sql = f"delete from usuarios where cedula = '{usuario.cedula}'"
+    sql = f"delete from usuarios where cedula = '{cedula}'"
     cursor = ObtenerCursor()
     cursor.execute( sql )
     cursor.connection.commit()
 
 #Consultar
 
-def BuscarUsuarios( usuario: Usuario ):
+def BuscarUsuarios( cedula: str ):
     """
     Carga de la DB las filas de la tabla usuarios
     """
     cursor = ObtenerCursor()
     cursor.execute(f""" select nombre, cedula, basic_salary, start_work_date, last_vacation_date, 
-        accumulated_vacation_days from usuarios where cedula_usuario = '{ usuario.cedula }' """)
+        accumulated_vacation_days from usuarios where cedula = '{ cedula }' """)
     
-    lista = cursor.fetchall()
+    lista = cursor.fetchone()
 
-    if lista is None:
+    if lista is None or len == 0:
         return f"El usuario no existe en la BD"
     
-    return f"El nombre del usuario es: {lista[0]}, Cedula: {lista[1]}, Salario Basico {lista[2]}, Fecha Primer dia de trabajo: {lista[3]},
-            Ultimo dia de vacaciones: {list[4]}, Dias de vacaciones acumulados: {lista[5]}"
+    return f"El nombre del usuario es: {lista[1]}, Cedula: {lista[0]}, Salario Basico {lista[2]}, Fecha Primer dia de trabajo: {lista[3]}"\
+            f" Ultimo dia de vacaciones: {lista[4]}, Dias de vacaciones acumulados: {lista[5]}"
