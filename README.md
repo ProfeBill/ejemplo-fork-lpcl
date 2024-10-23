@@ -1,57 +1,57 @@
-##  Final Settlement Calculator
-The project aims to develop a Python application that allows the calculation of labor settlements. This tool facilitates identifying the different components that must be paid to an employee upon the termination of their contractual relationship, such as severance pay, unused vacation days, severance, severance interest, service bonuses, and tax withholdings. The application receives information such as the base salary, start and end dates of employment, and accumulated vacation days to perform the necessary calculations according to current formulas and regulations.
+## Calculadora de Liquidaciones Finales
+El proyecto tiene como objetivo desarrollar una aplicación en Python que permita calcular liquidaciones laborales. Esta herramienta facilita la identificación de los diferentes componentes que deben ser pagados a un empleado al finalizar su relación contractual, como indemnización, días de vacaciones no utilizados, intereses de liquidación, bonos por servicio y retenciones fiscales. La aplicación recibe información como el salario base, las fechas de inicio y fin del empleo, y los días de vacaciones acumulados para realizar los cálculos necesarios de acuerdo con las fórmulas y regulaciones actuales.
 
-## Team Members
+## Miembros del Equipo
 Anderson Monsalve Monsalve
 
-Dubin Andres Soto Parodi
-## Project Structure
+Dubin Andrés Soto Parodi
+
+## Estructura del Proyecto
 
 - `src/`
   - `controller/`
-    - `controlador.py`: Contains the controller logic that connects the views and the model.
+    - `controlador.py`: Contiene la lógica del controlador que conecta las vistas y el modelo.
   - `model/`
-    - `calculadora.py`: Contains the `LiquidationCalculator` class, which performs the settlement calculations.
+    - `calculadora.py`: Contiene la clase `LiquidationCalculator`, que realiza los cálculos de liquidación.
   - `Gui/`
-    - kivy_test.py:It is where the interface of our program is located.
+    - `kivy_test.py`: Es donde se encuentra la interfaz de nuestro programa.
   - `view/`
-    - `consola.py`: Console interface that allows user interaction.
-    - `consolacontrolador.py`: Manages the interaction between the console and the controller.
+    - `consola.py`: Interfaz de consola que permite la interacción del usuario.
+    - `consolacontrolador.py`: Gestiona la interacción entre la consola y el controlador.
 - `test/`
-  - `controllertest.py`: Contains unit tests for the controller.
+  - `controllertest.py`: Contiene pruebas unitarias para el controlador.
 
-## Requirements
+## Requisitos
 
-Make sure you have installed:
+Asegúrate de tener instalado:
 
-- Python 3.8 or higher
-- `unittest` (included by default in Python)
+- Python 3.8 o superior
+- `unittest` (incluido por defecto en Python)
 
-## How to Run the Project
+## Cómo Ejecutar el Proyecto
 
-### Step 1: Clone the repository
+### Paso 1: Clonar el repositorio
 
-Clone this repository to your local machine using Git:
+Clona este repositorio en tu máquina local usando Git:
 
 ```bash
-git clone https://github.com/your-username/proyecto-liquidacion.git
+git clone https://github.com/tu-usuario/proyecto-liquidacion.git
 cd proyecto-liquidacion
 
 cd src/view
 
 python consola.py
 
-python-m unittest test.controllertest
+python -m unittest test.controllertest
 
-python src/ view/consolacontrolador.py
+python src/view/consolacontrolador.py
 python src/model/Gui/kivy_test.py
-  ```
-### step 2 : how to operate the console and controller
-First you run console.py, which is located in the scr/view folder
-This same process is done with this folder src/ view/consolacontrolador.py
+```
 
-### step 3 : For Kivy to work
-The first thing you should do is install Kivy and when you do, click Run and the calculator will appear with the graphical interface. To see it correctly, put it in the large tab. The folder to run is located in the GUI, with the name kivy_test. .py
-there you will be executed
+### Paso 2: Cómo operar la consola y el controlador
 
+Primero ejecuta `consola.py`, que se encuentra en la carpeta `src/view`. Este mismo proceso se realiza con la carpeta `src/view/consolacontrolador.py`.
 
+### Paso 3: Para que Kivy funcione
+
+Lo primero que debes hacer es instalar Kivy y, una vez hecho esto, haz clic en Ejecutar y la calculadora aparecerá con la interfaz gráfica. Para verla correctamente, colócala en la pestaña grande. La carpeta para ejecutar se encuentra en la GUI, con el nombre `kivy_test.py`. Ahí se ejecutará.
