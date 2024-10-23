@@ -6,21 +6,6 @@ Anderson Monsalve Monsalve
 
 Dubin Andrés Soto Parodi
 
-## Estructura del Proyecto
-
-- `src/`
-  - `controller/`
-    - `controlador.py`: Contiene la lógica del controlador que conecta las vistas y el modelo.
-  - `model/`
-    - `calculadora.py`: Contiene la clase `LiquidationCalculator`, que realiza los cálculos de liquidación.
-  - `Gui/`
-    - `kivy_test.py`: Es donde se encuentra la interfaz de nuestro programa.
-  - `view/`
-    - `consola.py`: Interfaz de consola que permite la interacción del usuario.
-    - `consolacontrolador.py`: Gestiona la interacción entre la consola y el controlador.
-- `test/`
-  - `controllertest.py`: Contiene pruebas unitarias para el controlador.
-
 ## Requisitos
 
 Asegúrate de tener instalado:
@@ -34,19 +19,6 @@ Asegúrate de tener instalado:
 
 Clona este repositorio en tu máquina local usando Git:
 
-```bash
-git clone https://github.com/tu-usuario/proyecto-liquidacion.git
-cd proyecto-liquidacion
-
-cd src/view
-
-python consola.py
-
-python -m unittest test.controllertest
-
-python src/view/consolacontrolador.py
-python src/model/Gui/kivy_test.py
-```
 
 ### Paso 2: Cómo operar la consola y el controlador
 
