@@ -45,4 +45,8 @@ python test/testcontroller.py
 ### Paso 4: Cómo operar la consola de la BD:
 ```markdown
 python src/Consola/Consola_Base_de_datos.py
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> 0e8f31a04b04704db3c21780127c404baca63db0

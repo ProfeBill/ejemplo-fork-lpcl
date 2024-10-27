@@ -11,7 +11,7 @@ src_path = os.path.join(current_directory, '..', 'src')
 # Agrega la ruta src al sistema de búsqueda de módulos
 sys.path.insert(0, src_path)
 # Importa la clase LiquidationCalculator del módulo model.calculadora
-from model.calculadora import LiquidationCalculator
+from Logica.calculadora import LiquidationCalculator
 
 class TestLiquidationCalculator(unittest.TestCase):
     def setUp(self):
