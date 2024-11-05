@@ -27,7 +27,7 @@ https://github.com/JuanPyC/Calculadora-de-Liquidacion-definitiva
 ### Paso 4: Cómo configurar el archivo SecretConfig.py:
 Datos secretos que no deben publicarse en el repositorio
 
-Diligencie estos datos y guarde un archivo como SecretConfig.py en el modulo `src`
+Diligencie estos datos y guarde un archivo como SecretConfig.py en la raiz del proyecto
 para poder ejecutar la aplicación de manera correcta
 
 #### El Archivo debe de contener lo siguiente:
