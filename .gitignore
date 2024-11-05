@@ -1,6 +1,2 @@
 .venv
-<<<<<<< HEAD
-src/SecretConfig.py
-=======
 SecretConfig.py
->>>>>>> 0e8f31a04b04704db3c21780127c404baca63db0

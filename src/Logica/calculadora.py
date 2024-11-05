@@ -1,220 +1,229 @@
 from datetime import datetime
+import math
 
 class Usuario:
-    def __init__(self, nombre: str, cedula: str, basic_salary: float, accumulated_vacation_days: int, start_date: str, last_vacation_date: str):
+    def __init__(self, nombre: str, cedula: str, motivo_finalizacion: str, salario_basico: float, fecha_inicio: str, fecha_ultimo_vacaciones: str):
         self.nombre = nombre
         self.cedula = cedula
-        self.basic_salary = basic_salary
-        self.accumulated_vacation_days = accumulated_vacation_days
-        self.start_date = start_date
-        self.last_vacation_date = last_vacation_date
+        self.motiivo_finalizacion = motivo_finalizacion
+        self.salario_basico = salario_basico
+        self.fecha_inicio = fecha_inicio
+        self.fecha_ultimo_vacaciones = fecha_ultimo_vacaciones
+        self.dias_vacaciones_acumulados = 0
 
-class LiquidationCalculator:
-    UVT_VALUE = 39205
-    DIAS_DEL_AÑO = 365
+class ErrorDiasAcumulados(Exception):
+    pass
+
+class ErrorFecha(Exception):
+    pass
+
+class FloatError(Exception):
+    pass
+
+class EnteroError(Exception):
+    pass
+
+class ErrorDiasTrabajados(Exception):
+    pass
+
+class ErrorCesantia(Exception):
+    pass
+
+class CalculadorLiquidacion:
     DIAS_DEL_MES = 30
-    DAYS_PER_YEAR = 360
-    MAX_MONTHS = 12
+    DIAS_POR_AÑO = 360
+    MESES_MAXIMOS = 12
+    VACACIONES = 720 # se utiliza en razón a que matemáticamente representan los 15 días de vacaciones por cada 360 días trabajados.
+    TASA_INTERES = 12 #Esta tasa está definida por ley y corresponde a una compensación anual por las cesantías acumuladas.
+    DIAS_VACACIONES = 15 #La ley colombiana establece 15 días hábiles de vacaciones anuales.
+    DIAS_POR_AÑO_ADICIONAL = 20 #Para cada año adicional después del primero, el empleador debe pagar 20 días de salario por año completo o fracción de año.
+    RETENCION = 10 #Para simplificar este cálculo y no conocer los descuentos exactos de ley asumiremos que su salario está sujeto a una retención aproximada del 10%.
 
     def __init__(self, usuario: Usuario):
         """
-        Inicializa el calculador de liquidaciones con el valor de la UVT.
-        
-        :param uvt_value: Valor de la Unidad de Valor Tributario (UVT), por defecto 39205.
+        Metodo __init__ para definir la variable usuario que es un objeto de tipo Usuario
         """
         self.usuario = usuario
 
-    def calculate_test_results(self):
+    def calcular_resultados(self) -> dict:
         """
         Calcula los resultados de la liquidación con base en el salario básico y fechas proporcionadas.
-        
-        :param self.basic_salary: Salario básico mensual del empleado.
-        :param start_date: Fecha de inicio del empleo en formato dd/mm/yyyy.
-        :param last_vacation_date: Fecha del último período de vacaciones en formato dd/mm/yyyy.
-        :param self.accumulated_vacation_days: Días de vacaciones acumulados.
+
         :return: Un diccionario con los resultados de la liquidación.
         """
         # Validar y convertir los parámetros de entrada
-        self.validate_positive_float(self.usuario.basic_salary)
-        self.validate_positive_integer(self.usuario.accumulated_vacation_days)
-        self.validate_date(self.usuario.start_date)
-        self.validate_date(self.usuario.last_vacation_date)
+        self.validar_float_positivo(self.usuario.salario_basico)
+        self.validar_entero_positivo(self.usuario.dias_vacaciones_acumulados)
+        self.validar_fecha(self.usuario.fecha_inicio)
+        self.validar_fecha(self.usuario.fecha_ultimo_vacaciones)
         
         # Calcular días trabajados y años trabajados
-        days_worked = (int(self.usuario.last_vacation_date) - int(self.usuario.start_date))
-        years_worked = days_worked / LiquidationCalculator.DIAS_DEL_AÑO
+        dias_trabajados = (self.validar_fecha(self.usuario.fecha_ultimo_vacaciones) - self.validar_fecha(self.usuario.fecha_inicio)).days
+        anos_trabajados = dias_trabajados / CalculadorLiquidacion.DIAS_POR_AÑO
         
         # Calcular diferentes componentes de la liquidación
-        indemnity = self.calculate_indemnity(self.usuario.basic_salary, years_worked)
-        vacations = self.calculate_vacations(self.usuario.basic_salary, days_worked)
-        severance = self.calculate_severance(self.usuario.basic_salary, days_worked)
-        severance_interest = self.calculate_severance_interest(severance, self.usuario.accumulated_vacation_days)
-        bonuses = self.calculate_bonus(self.usuario.basic_salary, days_worked)
-        tax_retention = self.calculate_tax_retention(indemnity + vacations + severance + severance_interest + bonuses)
+        indemnizacion = self.calcular_indemnizacion(anos_trabajados)
+        vacaciones = self.calcular_vacaciones(dias_trabajados)
+        cesantia = self.calcular_cesantia(dias_trabajados)
+        intereses_cesantia = self.calcular_intereses_cesantia(cesantia, dias_trabajados)
+        bonos = self.calcular_bono(dias_trabajados)
+        retencion_impuesto = self.calcular_retencion_impuesto(cesantia, intereses_cesantia, bonos, vacaciones)
         
         # Calcular el total a pagar después de la retención de impuestos
-        total_to_pay = indemnity + vacations + severance + severance_interest + bonuses - tax_retention
+        total_a_pagar = indemnizacion + vacaciones + cesantia + intereses_cesantia + bonos - retencion_impuesto
         
         return {
-            "indemnity": indemnity,
-            "vacations": vacations,
-            "severance": severance,
-            "severance_interest": severance_interest,
-            "bonuses": bonuses,
-            "tax_retention": tax_retention,
-            "total_to_pay": total_to_pay
+            "indemnizacion": indemnizacion,
+            "vacaciones": vacaciones,
+            "cesantia": cesantia,
+            "bonos": bonos,
+            "intereses_cesantia": intereses_cesantia,
+            "retencion_impuesto": retencion_impuesto,
+            "total_a_pagar": total_a_pagar
         }
 
-    def validate_date(self, str_date):
+    def validar_fecha(self, str_fecha):
         """
         Valida y convierte una cadena de fecha en un objeto datetime.
         
-        :param date_str: Fecha en formato dd/mm/yyyy.
+        :param str_fecha: Fecha en formato dd/mm/yyyy.
         :return: Objeto datetime.
         :raises ValueError: Si el formato de la fecha es inválido.
         """
         try:
-            return datetime.strptime(str_date, "%d/%m/%Y")
-        except ValueError:
-            raise ValueError("Invalid date format. Please use dd/mm/yyyy.")
+            return datetime.strptime(str_fecha, "%d/%m/%Y")
+        except:
+            raise ErrorFecha(f"Formato de fecha inválido. Por favor use dd/mm/yyyy.")
 
-    def validate_positive_float(self, value_str):
+    def validar_float_positivo(self, valor_str):
         """
         Valida y convierte una cadena a un número flotante positivo.
         
-        :param value_str: Cadena a convertir.
+        :param valor_str: Cadena a convertir.
         :return: Número flotante positivo.
         :raises ValueError: Si la conversión falla o el número es negativo.
         """
         try:
-            value = float(value_str)
-            if value < 0:
-                raise ValueError("Value cannot be negative.")
-            return value
-        except ValueError:
-            raise ValueError("Invalid number. Please enter a non-negative numeric value.")
-
-    def validate_positive_integer(self, value_str):
-        """
-        Valida y convierte una cadena a un número entero positivo.
+            valor = float(valor_str)
+            if valor < 0:
+                raise FloatError(f"Error el valor no puede ser negativo.")
+            return valor
+        except:
+            raise FloatError(f"Número inválido. El valor ingresado es {valor}. Por favor ingrese un valor numérico no negativo.")
         
-        :param value_str: Cadena a convertir.
-        :return: Número entero positivo.
+    def validar_entero_positivo(self, valor_str):
+        """
+        Valida y convierte una cadena a un número flotante positivo.
+        
+        :param valor_str: Cadena a convertir.
+        :return: Número flotante positivo.
         :raises ValueError: Si la conversión falla o el número es negativo.
         """
         try:
-            value = int(value_str)
-            if value < 0:
-                raise ValueError("Value cannot be negative.")
-            return value
-        except ValueError:
-            raise ValueError("Invalid integer. Please enter a non-negative integer value.")
+            valor = int(valor_str)
+            if valor < 0:
+                raise EnteroError(f"Error el valor no puede ser negativo.")
+            return valor
+        except:
+            raise EnteroError(f"Número inválido. El valor ingresado es {valor}. Por favor ingrese un valor numérico no negativo.")
 
-    def calculate_indemnity(self, years_worked):
+
+    def calcular_indemnizacion(self, anos_trabajados):
         """
         Calcula la indemnización por despido con base en el salario y los años trabajados.
         
-        :param self.basic_salary: Salario básico mensual.
-        :param years_worked: Años trabajados.
+        :param anos_trabajados: Años trabajados.
         :return: Indemnización calculada.
         """
-        max_days = LiquidationCalculator.MAX_MONTHS * LiquidationCalculator.DAYS_PER_YEAR
-        indemnity_days = min(years_worked * LiquidationCalculator.DAYS_PER_YEAR, max_days)
-        indemnity = (self.usuario.basic_salary * indemnity_days) / LiquidationCalculator.DIAS_DEL_MES
-        return indemnity
+        if self.usuario.motiivo_finalizacion.upper() == "RENUNCIA":
+            indemnizacion = 0
+            return indemnizacion
+     
+        if anos_trabajados < 1:
+            indemnizacion = self.usuario.salario_basico
 
-    def calculate_vacations(self, monthly_salary, days_worked):
+        parte_entera_minima = math.floor(anos_trabajados)
+        parte_entera_maxima = math.ceil(anos_trabajados)
+
+        if parte_entera_maxima > parte_entera_minima and parte_entera_minima > 1:
+            diferencia = parte_entera_maxima - parte_entera_maxima
+            fraccion_del_año = 0
+            if diferencia == 1:
+                fraccion_del_año = CalculadorLiquidacion.DIAS_POR_AÑO_ADICIONAL
+            indemnizacion = self.usuario.salario_basico + ((((CalculadorLiquidacion.DIAS_POR_AÑO_ADICIONAL * parte_entera_minima)+ fraccion_del_año)*self.usuario.salario_basico/CalculadorLiquidacion.DIAS_DEL_MES))
+        return indemnizacion
+
+    def calcular_vacaciones(self, dias_trabajados):
         """
         Calcula el valor de las vacaciones no disfrutadas.
         
-        :param monthly_salary: Salario mensual.
-        :param days_worked: Días trabajados.
+        :param dias_trabajados: Días trabajados.
         :return: Valor de las vacaciones calculado.
         :raises ValueError: Si los días trabajados son negativos.
         """
-        if days_worked < 0:
-            raise ValueError("Days worked cannot be negative")
-        vacation_value = (monthly_salary * days_worked) / (LiquidationCalculator.DAYS_PER_YEAR*2)
-        return vacation_value
+        if dias_trabajados < 0:
+            raise ErrorDiasTrabajados(f"Erorr Los días trabajados no pueden ser negativos. Los dias trabajados son: {dias_trabajados}.")
+        valor_vacaciones = self.usuario.salario_basico * (CalculadorLiquidacion.DIAS_VACACIONES/CalculadorLiquidacion.DIAS_POR_AÑO)
+        return valor_vacaciones
 
-    def calculate_severance(self, monthly_salary, days_worked):
+    def calcular_cesantia(self, dias_trabajados):
         """
         Calcula la cesantía acumulada.
         
-        :param monthly_salary: Salario mensual.
-        :param days_worked: Días trabajados.
+        :param dias_trabajados: Días trabajados.
         :return: Valor de la cesantía calculada.
         :raises ValueError: Si los días trabajados son negativos.
         """
-        if days_worked < 0:
-            raise ValueError("Days worked cannot be negative")
-        severance = (monthly_salary * days_worked) / LiquidationCalculator.DAYS_PER_YEAR
-        return severance
+        if dias_trabajados < 0:
+            raise ErrorDiasTrabajados(f"Erorr Los días trabajados no pueden ser negativos. Los dias trabajados son: {dias_trabajados}.")
+        cesantia = self.usuario.salario_basico * (dias_trabajados / CalculadorLiquidacion.DIAS_POR_AÑO)
+        return cesantia
 
-    def calculate_severance_interest(self, severance, days_worked):
+    def calcular_intereses_cesantia(self, cesantia, dias_trabajados):
         """
         Calcula el interés sobre la cesantía.
         
-        :param severance: Monto de la cesantía.
-        :param days_worked: Días trabajados.
+        :param cesantia: Monto de la cesantía.
+        :param dias_trabajados: Días trabajados.
         :return: Interés sobre la cesantía calculado.
         :raises ValueError: Si el monto de cesantía o los días trabajados son negativos.
         """
-        if severance < 0:
-            raise ValueError("Severance amount cannot be negative")
-        if days_worked < 0:
-            raise ValueError("Days worked cannot be negative")
-        severance_interest = (severance * days_worked * 0.12) / LiquidationCalculator.DAYS_PER_YEAR
-        return severance_interest
+        if cesantia < 0:
+            raise ErrorCesantia(f"Error el monto de cesantía no puede ser negativo. El monto actual es: {cesantia}")
+        if dias_trabajados < 0:
+            raise ErrorDiasTrabajados(f"Erorr Los días trabajados no pueden ser negativos. Los dias trabajados son: {dias_trabajados}.")
+        intereses_cesantia = cesantia * (CalculadorLiquidacion.TASA_INTERES/100)
+        return intereses_cesantia
 
-    def calculate_bonus(self, monthly_salary, days_worked):
+    def calcular_bono(self, dias_trabajados):
         """
         Calcula el bono proporcional.
         
-        :param monthly_salary: Salario mensual.
-        :param days_worked: Días trabajados.
+        :param dias_trabajados: Días trabajados.
         :return: Bono calculado.
         :raises ValueError: Si los días trabajados son negativos.
         """
-        if days_worked < 0:
-            raise ValueError("Days worked cannot be negative")
-        bonus = monthly_salary * (days_worked / LiquidationCalculator.DAYS_PER_YEAR)
-        return bonus
+        if dias_trabajados < 0:
+            raise ErrorDiasTrabajados(f"Erorr Los días trabajados no pueden ser negativos. Los dias trabajados son: {dias_trabajados}.")
+        bono = self.usuario.salario_basico * (dias_trabajados / CalculadorLiquidacion.DIAS_POR_AÑO)
+        return bono
 
-    def calculate_tax_retention(self, total_income):
+    def calcular_retencion_impuesto(self, cesantias, intereses_cesantias, prima, vacaciones):
         """
         Calcula la retención en la fuente sobre el total de ingresos.
         
-        :param total_income: Ingresos totales.
+        :param ingreso_total: Ingresos totales.
         :return: Retención calculada.
         :raises ValueError: Si el ingreso total no es un número.
         """
-        if not isinstance(total_income, (int, float)):
-            raise ValueError("Total income must be a number")
-        retention = 0
-        total_income = float(total_income)
-        income_uvt = total_income / self.uvt_value
+        retencion = (cesantias + intereses_cesantias + prima + vacaciones)*(CalculadorLiquidacion.RETENCION/100) 
+        return retencion
 
-        # Cálculo de la retención según la base gravable en UVT
-        if income_uvt <= 95:
-            pass
-        elif income_uvt <= 150:
-            base_uvt = income_uvt - 95
-            retention = base_uvt * 0.19 * self.uvt_value
-        elif income_uvt <= 360:
-            base_uvt = income_uvt - 150
-            retention = base_uvt * 0.28 * self.uvt_value + 10 * self.uvt_value
-        elif income_uvt <= 640:
-            base_uvt = income_uvt - 360
-            retention = base_uvt * 0.33 * self.uvt_value + 69 * self.uvt_value
-        elif income_uvt <= 945:
-            base_uvt = income_uvt - 640
-            retention = base_uvt * 0.35 * self.uvt_value + 162 * self.uvt_value
-        elif income_uvt <= 2300:
-            base_uvt = income_uvt - 945
-            retention = base_uvt * 0.37 * self.uvt_value + 268 * self.uvt_value
-        else:
-            base_uvt = income_uvt - 2300
-            retention = base_uvt * 0.39 * self.uvt_value + 770 * self.uvt_value
-        
-        return retention
+
+
+    def dias_de_vacacones_acumulados(self):
+        fecha_actual  = datetime.now().date()
+        self.usuario.dias_vacaciones_acumulados = fecha_actual - self.usuario.fecha_ultimo_vacaciones
+        if self.usuario.dias_vacaciones_acumulados < 0:
+            raise ErrorDiasAcumulados(f"Los dias acumulados tienen que ser mayor o igual a 0.")
+        return

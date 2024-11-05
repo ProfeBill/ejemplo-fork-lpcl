@@ -62,7 +62,6 @@ def Insertar( usuario : Usuario ):
         # Todas las instrucciones se ejecutan a tavés de un cursor
     try:
         cursor = ObtenerCursor()
-<<<<<<< HEAD
         if BuscarUsuariosExistentes(usuario.cedula) is False:
             raise ErrorNoInsertado(f"El usuario con cédula {usuario.cedula} ya existe.")
         else:
@@ -78,23 +77,6 @@ def Insertar( usuario : Usuario ):
             cursor.connection.commit()
     except:
         raise ErrorNoInsertado(f"No se pudo insertar el usuario")   
-=======
-        cursor.execute(f"""
-        insert into usuarios (
-            cedula,   nombre,  basic_salary, start_work_date,  last_vacation_date, accumulated_vacation_days
-        )
-        values 
-        (
-            '{usuario.cedula}',  '{usuario.nombre}', '{usuario.basic_salary}', '{usuario.start_date}',
-            '{usuario.last_vacation_date}', '{usuario.accumulated_vacation_days}'
-        );
-                       """)
-        cursor.connection.commit()
-    except  :
-        cursor.connection.rollback() 
-        raise Exception("No fue posible insertar el usuario : " + usuario.cedula )
-
->>>>>>> 0e8f31a04b04704db3c21780127c404baca63db0
 #Modificar Datos
 
 def Actualizar( usuario : Usuario ):
@@ -103,7 +85,6 @@ def Actualizar( usuario : Usuario ):
 
     El atributo cedula nunca se debe cambiar, porque es la clave primaria
     """
-<<<<<<< HEAD
     try:
         cursor = ObtenerCursor()
         if BuscarUsuariosExistentes(usuario.cedula) == True:
@@ -134,28 +115,6 @@ def Borrar( cedula:str ):
     except:
         raise ErrorNoBorrado(f"No se pudo borrar el registro con la cedula {cedula}")
 
-=======
-    cursor = ObtenerCursor()
-    cursor.execute(f"""
-        update usuarios
-        set 
-            nombre='{usuario.nombre}',
-            basic_salary='{usuario.basic_salary}',
-            start_work_date='{usuario.start_date}',
-            last_vacation_date='{usuario.last_vacation_date}',
-            accumulated_vacation_days='{usuario.accumulated_vacation_days}'
-        where cedula='{usuario.cedula}'
-    """)
-
-    cursor.connection.commit()
-
-def Borrar( cedula: str):
-    """ Elimina la fila que contiene a un usuario en la BD """
-    sql = f"delete from usuarios where cedula = '{cedula}'"
-    cursor = ObtenerCursor()
-    cursor.execute( sql )
-    cursor.connection.commit()
->>>>>>> 0e8f31a04b04704db3c21780127c404baca63db0
 
 #Consultar
 
@@ -164,7 +123,6 @@ def BuscarUsuarios( cedula: str ):
     Carga de la DB las filas de la tabla usuarios
     """
     cursor = ObtenerCursor()
-<<<<<<< HEAD
     cursor.execute(f""" Select nombre, cedula, basic_salary, start_work_date, last_vacation_date, 
         accumulated_vacation_days from usuarios where cedula = '{cedula}' """)
     
@@ -191,15 +149,3 @@ def BuscarUsuariosExistentes( cedula: str ):
     
     else:
         return False
-=======
-    cursor.execute(f""" select nombre, cedula, basic_salary, start_work_date, last_vacation_date, 
-        accumulated_vacation_days from usuarios where cedula = '{ cedula }' """)
-    
-    lista = cursor.fetchone()
-
-    if lista is None or len == 0:
-        return f"El usuario no existe en la BD"
-    
-    return f"El nombre del usuario es: {lista[1]}, Cedula: {lista[0]}, Salario Basico {lista[2]}, Fecha Primer dia de trabajo: {lista[3]}"\
-            f" Ultimo dia de vacaciones: {lista[4]}, Dias de vacaciones acumulados: {lista[5]}"
->>>>>>> 0e8f31a04b04704db3c21780127c404baca63db0
