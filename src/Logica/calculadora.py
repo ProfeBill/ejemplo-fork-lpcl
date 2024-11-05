@@ -219,9 +219,10 @@ class CalculadorLiquidacion:
         retencion = (cesantias + intereses_cesantias + prima + vacaciones)*(CalculadorLiquidacion.RETENCION/100) 
         return retencion
 
-
-
     def dias_de_vacacones_acumulados(self):
+        """
+        Toma la fecha actual del ordenador para tomar los dias acumulados desde las ultimas vacaciones
+        """
         fecha_actual  = datetime.now().date()
         self.usuario.dias_vacaciones_acumulados = fecha_actual - self.usuario.fecha_ultimo_vacaciones
         if self.usuario.dias_vacaciones_acumulados < 0:
