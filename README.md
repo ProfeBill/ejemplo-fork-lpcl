@@ -5,6 +5,9 @@ El proyecto tiene como objetivo desarrollar una aplicación en Python que permit
 Anderson Monsalve Monsalve
 Dubin Andrés Soto Parodi
 
+Modificado por :
+William Velasquez
+
 ## Editado por:
 Juan Diego Gomez - Juan Diego Usuga
 
